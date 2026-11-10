@@ -79,7 +79,7 @@ static void bench_binpow(long long N,long long& out_us,std::size_t& out_bytes){
     out_bytes=snapshot_alloc();
 }
 static void bench_vector(long long N, long long& out_us, std::size_t& out_bytes) {
-    // Warm-up
+    
     {
         std::vector<int> v;
         v.reserve(1);
@@ -96,7 +96,7 @@ static void bench_vector(long long N, long long& out_us, std::size_t& out_bytes)
         }
         volatile int last = v.empty() ? 0 : v.back();
         (void)last;
-    } // destructor frees — not tracked (delete doesn't subtract)
+    } 
     auto t1 = now();
 
     out_us    = elapsed_us(t0, t1);
@@ -108,7 +108,7 @@ struct Node {
     explicit Node(long long v) noexcept : value(v), next(nullptr) {}
 };
 static void bench_linked_list(long long N, long long& out_us, std::size_t& out_bytes) {
-    // Warm-up: build and destroy a tiny list
+    
     {
         Node* head = nullptr;
         for (int i = 0; i < 8; ++i) {
@@ -122,7 +122,7 @@ static void bench_linked_list(long long N, long long& out_us, std::size_t& out_b
     reset_alloc();
     auto t0 = now();
 
-    // --- Build ---
+    
     Node* head = nullptr;
     Node* tail = nullptr;
     for (long long i = 0; i < N; ++i) {
@@ -131,12 +131,12 @@ static void bench_linked_list(long long N, long long& out_us, std::size_t& out_b
         else       { tail->next = n; tail = n; }
     }
 
-    // --- Traverse ---
+
     volatile long long acc = 0;
     for (Node* cur = head; cur; cur = cur->next) acc += cur->value;
     (void)acc;
 
-    // --- Free ---
+    
     while (head) {
         Node* tmp = head->next;
         delete head;
@@ -157,7 +157,7 @@ static std::vector<long long> build_sizes() {
         v *= mult;
         if (v < 10.0) v = 10.0;   // guard against fp underflow
     }
-    // Always include the exact cap
+    
     if (sizes.empty() || sizes.back() != cap) sizes.push_back(cap);
     return sizes;
 }
